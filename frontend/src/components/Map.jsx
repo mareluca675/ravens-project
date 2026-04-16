@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import 'leaflet/dist/leaflet.css';
-import { MapContainer, TileLayer, CircleMarker, Popup, GeoJSON, LayersControl } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Popup, GeoJSON, LayersControl, FeatureGroup } from 'react-leaflet';
 
 const WASTE_COLORS = {
   plastic: '#3498db',
@@ -103,19 +103,21 @@ export default function Map({ wasteData, dumpingData, predictionData, mapLayers 
   return (
     <div style={styles.container}>
       <MapContainer
-        center={[46.0, 25.0]}
+        center={[45.9432, 24.9668]}
         zoom={7}
         style={{ height: '100%', width: '100%' }}
       >
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
+          subdomains="abcd"
+          maxZoom={20}
         />
 
         <LayersControl position="topright">
           {/* Waste Detections */}
           <LayersControl.Overlay checked name="Waste Detections">
-            <React.Fragment>
+            <FeatureGroup>
               {wasteFeatures.map((feature, idx) => {
                 const pos = getCoords(feature);
                 if (!pos) return null;
@@ -144,12 +146,12 @@ export default function Map({ wasteData, dumpingData, predictionData, mapLayers 
                   </CircleMarker>
                 );
               })}
-            </React.Fragment>
+            </FeatureGroup>
           </LayersControl.Overlay>
 
           {/* Dumping Incidents */}
           <LayersControl.Overlay checked name="Dumping Incidents">
-            <React.Fragment>
+            <FeatureGroup>
               {dumpingFeatures.map((feature, idx) => {
                 const pos = getCoords(feature);
                 if (!pos) return null;
@@ -185,12 +187,12 @@ export default function Map({ wasteData, dumpingData, predictionData, mapLayers 
                   </CircleMarker>
                 );
               })}
-            </React.Fragment>
+            </FeatureGroup>
           </LayersControl.Overlay>
 
           {/* Prediction Cones */}
           <LayersControl.Overlay checked name="Prediction Cones">
-            <React.Fragment>
+            <FeatureGroup>
               {predictionFeatures.map((feature, idx) => {
                 const props = feature.properties || {};
                 const horizon = props.time_horizon || props.horizon || '';
@@ -239,12 +241,12 @@ export default function Map({ wasteData, dumpingData, predictionData, mapLayers 
                   </CircleMarker>
                 );
               })}
-            </React.Fragment>
+            </FeatureGroup>
           </LayersControl.Overlay>
 
           {/* Risk Heatmap */}
           <LayersControl.Overlay name="Risk Heatmap">
-            <React.Fragment>
+            <FeatureGroup>
               {dumpingFeatures.map((feature, idx) => {
                 const pos = getCoords(feature);
                 if (!pos) return null;
@@ -284,7 +286,7 @@ export default function Map({ wasteData, dumpingData, predictionData, mapLayers 
                   />
                 );
               })}
-            </React.Fragment>
+            </FeatureGroup>
           </LayersControl.Overlay>
         </LayersControl>
       </MapContainer>
