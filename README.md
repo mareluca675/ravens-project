@@ -57,33 +57,83 @@ tests/
 | Advection-diffusion PDE | `prediction_engine.py` | O(H·W) per step |
 | LSTM trajectory correction | `prediction_engine.py` | O(T·H²) |
 
-## Setup
+## Prerequisites
 
-### Backend
+- **Python 3.10+** — backend runtime
+- **Node.js 18+** and **npm** — frontend build tooling
+- **pip** — Python package manager
+
+## Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/mareluca675/ravens-project.git
+cd ravens-project
+```
+
+### 2. Install backend dependencies
 
 ```bash
 pip install -r requirements.txt
-uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### Frontend
+This installs FastAPI, PyTorch, NumPy, SciPy, and all other Python packages.
+
+### 3. Install frontend dependencies
 
 ```bash
 cd frontend
 npm install
-npm start    # runs on :3000
+cd ..
 ```
 
-### Both (convenience)
+### 4. Start the application
+
+**Option A — Start both servers at once:**
 
 ```bash
+chmod +x run.sh
 ./run.sh
 ```
 
-## Demo
+This launches the backend on port 8000 and the frontend on port 3000. Press `Ctrl+C` to stop both.
 
-The application runs fully offline using synthetic data. Click **Generate Demo Data**
-in the UI, or call the API directly:
+**Option B — Start each server manually (in separate terminals):**
+
+Terminal 1 — Backend:
+```bash
+uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Terminal 2 — Frontend:
+```bash
+cd frontend
+npm start
+```
+
+### 5. Open the application
+
+Once both servers are running, open your browser and go to:
+
+> **http://localhost:3000**
+
+You should see the RAVENS dashboard with a dark-themed UI, a tab bar (Map View, Waste, Dumping, Prediction), and a stats bar at the top.
+
+### 6. Generate demo data
+
+The application runs fully offline using built-in synthetic data generators — no real sensors or external APIs are required.
+
+Click the **"Generate Demo Data"** button in the top-right corner of the UI. This calls the backend to:
+- Process a synthetic LiDAR point cloud (waste detection + classification)
+- Run multi-sensor fusion (thermal + optical + LiDAR dumping analysis)
+- Simulate a pollutant trajectory prediction (advection-diffusion model)
+
+After a few seconds the map will populate with detection markers and all dashboard panels will show data.
+
+The backend API is also available directly at **http://localhost:8000**. You can explore it interactively at **http://localhost:8000/docs** (Swagger UI).
+
+## API Examples
 
 ```bash
 # Generate synthetic LiDAR waste detections
@@ -95,7 +145,7 @@ curl -X POST "http://localhost:8000/api/dumping/detect?synthetic=true"
 # Predict trajectory from a point on Someș river
 curl -X POST "http://localhost:8000/api/prediction/trajectory?lat=46.77&lon=23.59"
 
-# Get combined map layers
+# Get combined map layers (GeoJSON)
 curl "http://localhost:8000/api/map/layers"
 
 # Get statistics
