@@ -90,33 +90,43 @@ cd ..
 
 ### 4. Start the application
 
-**Option A — Start both servers at once:**
+You need to run **two servers** — the Python backend and the React frontend. Both must be running at the same time. Open a **terminal** (Command Prompt / PowerShell on Windows, Terminal on macOS/Linux) and navigate to the project folder.
+
+> **Important:** Do NOT double-click `run.sh` — it will open in a text editor instead of running. All commands below must be typed into a terminal.
+
+**Option A — Start each server manually (recommended):**
+
+Open **two separate terminal windows**, both starting in the `ravens-project` folder.
+
+Terminal 1 — Start the backend:
+```bash
+python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+```
+Wait until you see `Uvicorn running on http://0.0.0.0:8000` — the backend is now ready.
+
+Terminal 2 — Start the frontend:
+```bash
+cd frontend
+npm start
+```
+Wait until you see `Compiled successfully!` — a browser tab should open automatically.
+
+**Option B — Start both at once (macOS/Linux only):**
 
 ```bash
 chmod +x run.sh
 ./run.sh
 ```
 
-This launches the backend on port 8000 and the frontend on port 3000. Press `Ctrl+C` to stop both.
-
-**Option B — Start each server manually (in separate terminals):**
-
-Terminal 1 — Backend:
-```bash
-uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-Terminal 2 — Frontend:
-```bash
-cd frontend
-npm start
-```
+Press `Ctrl+C` to stop both servers.
 
 ### 5. Open the application
 
 Once both servers are running, open your browser and go to:
 
 > **http://localhost:3000**
+
+If the page shows a blank screen or connection error, make sure the backend (Terminal 1) is still running — the frontend needs it to load data.
 
 You should see the RAVENS dashboard with a dark-themed UI, a tab bar (Map View, Waste, Dumping, Prediction), and a stats bar at the top.
 
