@@ -1,0 +1,16 @@
+laspy
+numpy
+scipy
+scikit-learn
+torch
+torchvision
+fastapi
+uvicorn[standard]
+sqlalchemy
+geoalchemy2
+aiosqlite
+shapely
+pyproj
+requests
+python-multipart
+Pillow
