@@ -3,10 +3,26 @@ FastAPI router for illegal dumping detection endpoints.
 """
 
 import logging
+import random
 
 import numpy as np
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
+
+# Real Romanian river locations — one is chosen per incident so the demo map
+# does not pile every dumping event on the exact same pixel.
+ROMANIAN_DUMPING_SITES = [
+    (46.7700, 23.5900),  # Someș — Cluj-Napoca
+    (46.5350, 24.5580),  # Mureș — Târgu Mureș
+    (45.8030, 24.1530),  # Olt — Sibiu
+    (46.5670, 26.9120),  # Siret — Bacău
+    (47.7930, 22.8790),  # Someș — Satu Mare
+    (45.4350, 28.0500),  # Dunăre — Galați
+    (44.9500, 26.0250),  # Prahova — Ploiești
+    (46.9330, 26.3700),  # Bistrița — Piatra Neamț
+    (45.7540, 21.2260),  # Bega — Timișoara
+    (44.4330, 26.1020),  # Dâmbovița — București
+]
 
 from backend.database.crud import get_session, add_dumping_incident, get_dumping_incidents
 from backend.utils.synthetic_data import (
@@ -49,10 +65,15 @@ async def detect_dumping(
     result = run_fusion_pipeline(thermal, optical, lidar_points)
 
     evidence = result.get("evidence", {})
+    # Pick a random river location, with a small jitter so repeated demo
+    # clicks on the same site don't overlap pixel-perfectly on the map.
+    base_lat, base_lon = random.choice(ROMANIAN_DUMPING_SITES)
+    jitter_lat = random.uniform(-0.004, 0.004)
+    jitter_lon = random.uniform(-0.006, 0.006)
     incident = await add_dumping_incident(
         session,
-        latitude=46.77,
-        longitude=23.59,
+        latitude=base_lat + jitter_lat,
+        longitude=base_lon + jitter_lon,
         classification=result["classification"],
         confidence=result["confidence"],
         thermal_score=evidence.get("thermal_score"),
